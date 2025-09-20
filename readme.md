@@ -1,7 +1,3 @@
-# archive update
-
-Riot has fixed the "software" mouse on macos. This app is no longer required and this repo is being archived. Use the "software mouse" setting in League instead.
-
 # lolock
 
 ![lolock](./ss.png)
