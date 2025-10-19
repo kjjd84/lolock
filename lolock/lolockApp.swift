@@ -38,16 +38,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         removeObservers()
     }
 
+    // MARK: - Observers
     private func setupObservers() {
         let nc = NSWorkspace.shared.notificationCenter
-        nc.addObserver(self,
-                       selector: #selector(appActivated(_:)),
-                       name: NSWorkspace.didActivateApplicationNotification,
-                       object: nil)
-        nc.addObserver(self,
-                       selector: #selector(appDeactivated(_:)),
-                       name: NSWorkspace.didDeactivateApplicationNotification,
-                       object: nil)
+        nc.addObserver(self, selector: #selector(appActivated(_:)),
+                       name: NSWorkspace.didActivateApplicationNotification, object: nil)
+        nc.addObserver(self, selector: #selector(appDeactivated(_:)),
+                       name: NSWorkspace.didDeactivateApplicationNotification, object: nil)
+        nc.addObserver(self, selector: #selector(appTerminated(_:)),
+                       name: NSWorkspace.didTerminateApplicationNotification, object: nil)
     }
 
     private func removeObservers() {
@@ -70,6 +69,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         stopLocking()
     }
 
+    @objc private func appTerminated(_ note: Notification) {
+        guard let app = note.userInfo?[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication,
+              app.bundleIdentifier == Self.leagueBundle else { return }
+
+        isLeagueActive = false
+        stopLocking()
+    }
+
+    // MARK: - Mouse Lock Logic
     private func startLocking() {
         stopLocking()
 
@@ -117,8 +125,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 }
 
+// MARK: - Helpers
 private func clamp<T: Comparable>(_ value: T, minValue: T, maxValue: T) -> T {
-    return min(max(value, minValue), maxValue)
+    min(max(value, minValue), maxValue)
 }
 
 private extension NSPoint {
