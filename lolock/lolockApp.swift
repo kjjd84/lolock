@@ -5,52 +5,37 @@ import LaunchAtLogin
 @main
 struct lolockApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var delegate
-    var body: some Scene { }
+
+    var body: some Scene {
+        MenuBarExtra("lolock", systemImage: "computermouse") {
+            VStack(alignment: .leading, spacing: 10) {
+                LaunchAtLogin.Toggle()
+                Divider()
+                Button("Quit") { NSApp.terminate(nil) }
+            }
+            .padding(12)
+            .frame(width: 160)
+        }
+        .menuBarExtraStyle(.menu)
+    }
 }
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private static let leagueBundle = "com.riotgames.LeagueofLegends.GameClient"
 
-    private var statusItem: NSStatusItem!
     private var eventMonitor: Any?
     private var isLeagueActive = false
-
     private var lastTime: TimeInterval = 0
     private var lastDeltaX: CGFloat = 0
     private var lastDeltaY: CGFloat = 0
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        setupMenuBar()
         setupObservers()
     }
 
     func applicationWillTerminate(_ notification: Notification) {
         stopLocking()
         removeObservers()
-    }
-
-    private func setupMenuBar() {
-        statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
-        statusItem.button?.image = NSImage(systemSymbolName: "computermouse", accessibilityDescription: nil)
-
-        let menu = NSMenu()
-        let launch = NSMenuItem(title: "Launch at Login", action: #selector(toggleLogin), keyEquivalent: "")
-        launch.state = LaunchAtLogin.isEnabled ? .on : .off
-        menu.addItem(launch)
-
-        menu.addItem(.separator())
-        menu.addItem(NSMenuItem(title: "Quit", action: #selector(quitApp), keyEquivalent: "q"))
-        statusItem.menu = menu
-    }
-
-    @objc private func toggleLogin(_ sender: NSMenuItem) {
-        LaunchAtLogin.isEnabled.toggle()
-        sender.state = LaunchAtLogin.isEnabled ? .on : .off
-    }
-
-    @objc private func quitApp() {
-        stopLocking()
-        NSApp.terminate(nil)
     }
 
     private func setupObservers() {
@@ -92,9 +77,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             matching: [.mouseMoved, .leftMouseDragged, .rightMouseDragged]
         ) { [weak self] event in
             guard let self = self, self.isLeagueActive else { return }
-            guard let screen = NSScreen.screens.first(where: { $0.frame.contains(NSEvent.mouseLocation) }) else {
-                return
-            }
+            guard let screen = NSScreen.screens.first(where: { $0.frame.contains(NSEvent.mouseLocation) }) else { return }
 
             let screenFrame = screen.frame
             let flipped = event.locationInWindow.flipped(in: screenFrame)
@@ -128,7 +111,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             NSEvent.removeMonitor(monitor)
             eventMonitor = nil
         }
-        
         lastTime = 0
         lastDeltaX = 0
         lastDeltaY = 0
