@@ -10,8 +10,8 @@ struct lolockApp: App {
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
     // Config
-    private static let leagueBundle = "com.riotgames.LeagueofLegends.LeagueClientUx"
-    // private static let leagueBundle = "com.riotgames.LeagueofLegends.GameClient"
+    // private static let leagueBundle = "com.riotgames.LeagueofLegends.LeagueClientUx"
+    private static let leagueBundle = "com.riotgames.LeagueofLegends.GameClient"
     private var throttleInterval: TimeInterval = 0.008 // ~120 Hz default
 
     // UI / State
