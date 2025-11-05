@@ -1,4 +1,4 @@
-# Abandoned
+# Archived
 
 This app is no longer necessary. Now you can just pick "Use software mouse" in League and set the sensitivity level to 0 (zero). 
 
